@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vue Axios Example</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <ul>
+    <li v-for="user in users">{{ user.name }}</li>
+  </ul>
+</div>
+
+<script>
+  
+  new Vue({
+    el: '#app',
+    data: {
+      users: []
+    },
+    created () {
+      var vm = this
+      axios.get('https://jsonplaceholder.typicode.com/users')
+        .then(function (response) {
+          vm.users = response.data
+        })
+    }
+  })
+
+  var backend_base_url = 'http://localhost:5000'
+  
+  var predict_iris = function(data){
+    return axios.get(backend_base_url + '/api/v1/iris/predict', { params: data })
+  }
+
+  predict_iris({
+    sepal_length: 6.5, 
+    sepal_width: 3.0, 
+    petal_length: 5.8, 
+    petal_width: 2.2
+  }).then(function (response) {
+    console.log('response.data', response.data)
+  })
+
+</script>

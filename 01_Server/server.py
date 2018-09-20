@@ -8,10 +8,10 @@ app = Flask(__name__)
 cors = CORS(app)
 app.config['CORS_HEADERS'] = 'Content-Type'
 
-def get_file_path(filename):
+def get_model_path(filename):
     current_script_filename = os.path.realpath(__file__)
     current_script_dir = os.path.dirname(current_script_filename)
-    return os.path.join(current_script_dir, filename)
+    return os.path.join(current_script_dir, 'model', filename)
 
 ###############################################################
 # Iris API:
@@ -54,7 +54,7 @@ def predict_iris(model, data):
 @app.route('/api/v1/iris/predict', methods=['GET'])
 @cross_origin()
 def get_iris_prediction():
-    with open(get_file_path(iris_model_filename), "rb") as file:
+    with open(get_model_path(iris_model_filename), "rb") as file:
         model = pickle.load(file)
     
     args = request.args

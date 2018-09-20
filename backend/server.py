@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request
 from flask_cors import CORS, cross_origin
 from sklearn import svm
 import pickle
@@ -12,14 +12,6 @@ def get_file_path(filename):
     current_script_filename = os.path.realpath(__file__)
     current_script_dir = os.path.dirname(current_script_filename)
     return os.path.join(current_script_dir, filename)
-
-# @app.after_request
-# def after_request(response):
-#   response.headers.add('Access-Control-Allow-Origin', 'http://localhost:5000')
-#   response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-#   response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
-#   response.headers.add('Access-Control-Allow-Credentials', 'true')
-#   return response
 
 ###############################################################
 # Iris API:
@@ -55,7 +47,8 @@ def predict_iris(model, data):
         feature.append(data[param])
     pred = model.predict([feature])[0]
     return {
-        'class': iris_classes[pred]
+        'input': data,
+        'output': iris_classes[pred]
     }
 
 @app.route('/api/v1/iris/predict', methods=['GET'])

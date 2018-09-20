@@ -1,46 +1,91 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Vue Axios Example</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.4.2/vue.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <title>API Explorer</title>
+    <script src="./assets/js/vue.js"></script>
+    <script src="./assets/js/axios.min.js"></script>
 </head>
 <body>
 <div id="app">
-  <ul>
-    <li v-for="user in users">{{ user.name }}</li>
-  </ul>
+
+  <div>
+
+    <hr>
+    <h1>Iris Flower Prediction</h1>
+
+    Sepal Length:<br>
+    <input type="text" v-model="iris.sepalLength"><br><br>
+    
+    Sepal Width:<br>
+    <input type="text" v-model="iris.sepalWidth"><br><br>
+
+    Petal Length:<br>
+    <input type="text" v-model="iris.petalLength"><br><br>
+
+    Petal Width:<br>
+    <input type="text" v-model="iris.petalWidth"><br><br>
+
+    <button v-on:click="predictIris">Predict</button> <br><br>
+
+    <p v-if="iris.errorMessage" 
+      style="color:red;font-weight:bold">
+      {{iris.errorMessage}}
+    </p>
+
+    <textarea 
+      v-model="iris.prediction" 
+      rows="10" cols="50"
+      disabled>
+    </textarea>
+
+    <hr>
+  </div> 
 </div>
 
 <script>
   
-  new Vue({
+  var vm = new Vue({
+
     el: '#app',
+
     data: {
-      users: []
+      api_base_url:  'http://localhost:5000',
+      iris: {
+        sepalLength: 1.0,
+        sepalWidth: 1.0,
+        petalLength: 1.0,
+        petalWidth: 1.0,
+        prediction: '',
+        errorMessage: ''
+      }
     },
-    created () {
-      var vm = this
-      axios.get('https://jsonplaceholder.typicode.com/users')
-        .then(function (response) {
-          vm.users = response.data
-        })
+
+    methods: {
+      predictIris: function(event){
+        data = {
+          sepal_length: vm.iris.sepalLength, 
+          sepal_width: vm.iris.sepalWidth, 
+          petal_length: vm.iris.petalLength, 
+          petal_width: vm.iris.petalWidth
+        };
+
+        //TODO: Validation
+
+        axios.get(
+          vm.api_base_url + '/api/v1/iris/predict', 
+          { params: data }
+        ).then(function (res) {
+          vm.iris.prediction = JSON.stringify(res.data, null, 2)
+          vm.iris.errorMessage = ''
+        }).catch(function (error){
+          vm.iris.errorMessage = error.response
+          console.error(error.response)
+        });
+
+      }
     }
-  })
+  });
 
-  var backend_base_url = 'http://localhost:5000'
-  
-  var predict_iris = function(data){
-    return axios.get(backend_base_url + '/api/v1/iris/predict', { params: data })
-  }
 
-  predict_iris({
-    sepal_length: 6.5, 
-    sepal_width: 3.0, 
-    petal_length: 5.8, 
-    petal_width: 2.2
-  }).then(function (response) {
-    console.log('response.data', response.data)
-  })
 
 </script>
